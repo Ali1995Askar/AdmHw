@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+</html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>heart doctor</title>
+    <link  rel="stylesheet" href= "/static/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg  navbar-dark bg-dark">
+        <a class="navbar-brand" href="http://heart-doctor.atwebpages.com/home" target="_self">
+        <img class="img-responsive " id="img-logo" src="/static/img/Heartlogo.png" >
+        &nbsp; heart doctor</a>
+       
+    </nav>
+
+    <div class="jumbotron text-center" style="padding-top: 15px; ">
+        <a href="#" >
+            <img src="/static/img/checkLogo.png" style="width: 120px; height: 90px;"/>
+            <h3 style="color: red;">Smart Doctor</h3>
+        </a>
+        <hr>
+        <form method="POST" action="" autocomplete="off">
+            {% csrf_token %}
+        
+            <div class="form-row justify-content-center">
+                <div class="form-group col-md-4 col-lg-3 ">
+                    <label for="inputEmail4">Age</label>
+                    <input type="text" class="form-control" id="Age" placeholder="Age"  name ='Age' required>
+                </div>
+
+                <div class="form-group col-md-4 col-lg-3">
+                    <label for="inputEmail4">Max Heart Rate</label>
+                    <input type="text" class="form-control" id="Max_Heart_Rate" placeholder="Max Heart Rate" name="Max_Heart_Rate" required>
+                </div>
+
+                <div class="form-group col-md-4 col-lg-3">
+                    <label for="inputEmail4">Rest Blood Pressure</label>
+                    <input type="text" class="form-control" id="Rest_Blood_Pressure" placeholder="Rest Blood Pressure" name="Rest_Blood_Pressure" required>
+                </div>
+            </div>
+            <hr>
+            <div class="form-row justify-content-center">
+                <div class="form-group col-md-6 col-lg-3">
+                    <label for="Rest_Electro">Rest Electro</label>
+                    <select class="form-control" name="Rest_Electro">
+                        <option>normal</option>
+                        <option>left_vent_hyper</option>
+                        <option>st_t_wave_abnormality</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6 col-lg-3">
+                    <label for="inputEmail4">Chest Pain Type</label>
+                    <select class="form-control" name="Chest_Pain_Type">
+                        <option>asympt</option>
+                        <option>atyp_angina</option>
+                        <option>non_anginal</option>
+                        <option>typ_angina</option>
+                    </select>
+                </div>
+            </div>
+            <hr>
+            <div class="form-row justify-content-center">
+
+                <div class="form-group col-md-4 col-lg-2">
+                    <label for="inputEmail4">Exercice Angina</label>
+                    <select class="form-control" name="Exercice_Angina">
+                        <option>yes</option>
+                        <option>no</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-4 col-lg-2">
+                    <label for="inputEmail4">Blood Sugar</label>
+                    <select class="form-control" name="Blood_Sugar">
+                        <option>TRUE</option>
+                        <option>FALSE</option>
+                    </select>
+                </div> 
+            </div>
+            <hr>
+            <div class="form-row justify-content-center">
+                
+                <div class="form-group col-md-4 col-lg-5">
+                    <h2>Bayes 
+                        <h5 style="color: red;"><br>positive : {{positive_bayes}}</h5>
+                        <h5 style="color: red;"><br>negative : {{negative_bayes}}</h5>
+                    </h2>
+                </div>
+                <div class="form-group col-md-4 col-lg-2">
+                    <button type="submit" class="btn btn-danger btn-lg">Check Heart</button>
+                </div>
+                <div class="form-group col-md-4 col-lg-5">
+                    <h2>Decision Tree  </h2> <h5 style="color: red;">{{decision_tree}}</h5>
+                </div>
+            </div>
+            <hr>
+        </form>
+    </div>
+
+    <footer class="page-footer font-small blue">
+        <div class="footer-copyright text-center py-3">© 2020 Copyright:
+            <a href="http://heart-doctor.atwebpages.com/home"> heart-doctor.com</a>
+            <a href="https://www.svuonline.org/"><img src="/static/img/SvuLogo.png" style="width: 30px; height: 30px;"/></a>
+            
+            
+        </div>
+    </footer>
+ <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
