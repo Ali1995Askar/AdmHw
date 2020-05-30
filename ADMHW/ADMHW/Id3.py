@@ -204,7 +204,7 @@ def classes_count(rows):
     return count
 
 
-def read_csv(file_path, split=(80,20), shuffle=False, cast_numerics=True):
+def read_csv(file_path, split=(100,0), shuffle=False, cast_numerics=True):
     with open(file_path, "r") as csv_file:
         dataset = csv.reader(csv_file)
         data_table = [row for row in dataset]
@@ -285,6 +285,6 @@ file_path = os.path.join(module_dir, "heart_disease_male.csv")
 
 data = read_csv(file_path, shuffle=True)
 TARGET = len(data["headers"]) - 1
-THRESHOLD = 0.09
+THRESHOLD = 0.0
 index_to_name = data["index_to_name"]
 root = create_tree(data["train_set"], data["headers"], data["name_to_index"], data["attr_type"])

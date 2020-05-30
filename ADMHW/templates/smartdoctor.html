@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>heart doctor</title>
+    <title>smart doctor</title>
     <link  rel="stylesheet" href= "/static/main.css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -84,30 +84,32 @@
             <div class="form-row justify-content-center">
                 
                 <div class="form-group col-md-4 col-lg-5">
-                    <h2>Bayes 
+                    <h2>Naive Bayes 
                         <h5 style="color: red;"><br>positive : {{positive_bayes}}</h5>
+                        <h5><br>pos = {{pos_perc}} %</h5>
                         <h5 style="color: red;"><br>negative : {{negative_bayes}}</h5>
+                        <h5><br>neg = {{neg_perc}} %</h5>
+                   
                     </h2>
                 </div>
                 <div class="form-group col-md-4 col-lg-2">
-                    <button type="submit" class="btn btn-danger btn-lg">Check Heart</button>
+                    <button type="submit" class="btn btn-danger btn-lg btn-block">Check Heart</button>
                 </div>
                 <div class="form-group col-md-4 col-lg-5">
-                    <h2>Decision Tree  </h2> <h5 style="color: red;">{{decision_tree}}</h5>
+                    <h2>Decision Tree  </h2> <h3 style="color: red;">{{decision_tree}}</h3>
                 </div>
             </div>
             <hr>
         </form>
-    </div>
-
-    <footer class="page-footer font-small blue">
+            <footer class="page-footer font-small blue">
         <div class="footer-copyright text-center py-3">© 2020 Copyright:
             <a href="http://heart-doctor.atwebpages.com/home"> heart-doctor.com</a>
             <a href="https://www.svuonline.org/"><img src="/static/img/SvuLogo.png" style="width: 30px; height: 30px;"/></a>
-            
-            
         </div>
     </footer>
+    </div>
+
+
  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>

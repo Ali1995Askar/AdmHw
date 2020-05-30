@@ -1,9 +1,8 @@
-# Make Predictions with Naive Bayes On The Iris Dataset
+import os
 from csv import reader
 from math import sqrt
 from math import exp
 from math import pi
-import os
 from collections import Counter
 
 def fill_missing_data(rows, attr, most_common):
@@ -67,137 +66,148 @@ def load_csv(file_path, separate=","):
 			"name_to_index": name_to_index
 		}
 
-class NaiveBayes:
-	def __init__(self, dataset, attr_type_ids):
+class Bayes:
+	def __init__(self, dataset, attr_type):
 		self.dataset = dataset
-		self.attr_type_ids = attr_type_ids
-		self.lookup = self.__create_lookup_table()
+		self.attr_type = attr_type
+		self.mapper = self.__labels_mapper()
 		# process the dataset
-		self.__label_to_number()
+		self.__map_labels()
 		# create counter for labels for each class of the target attribute 
-		self.target_labels_counter = self.__create_target_labels_counter()
+		self.target_labels_counter = self.__calc_class_label_counter()
 		# create model summaries
-		self.model = self.__summarize_by_class()
+		self.summaries = self.__filter_processed_data_by_class()
 
 	# separate the dataset by target values and calculate the labels frequencies
-	def __create_target_labels_counter(self):
-		separated = self.__separate_by_class()
+	def __calc_class_label_counter(self):
+		filtered = self.__filter_data_by_class()
 		labels_counter = {}
-		for class_value, rows in separated.items():
-			labels_counter[class_value] = {}
+		for label, rows in filtered.items():
+			labels_counter[label] = {}
 			for idx, col in enumerate(zip(*rows)):
-				if idx in self.attr_type_ids["continuous"]:
+				if idx in self.attr_type["continuous"]:
 					continue
 				count = Counter(col)
-				labels_counter[class_value][idx] = {key: val for key, val in count.items()}
+				labels_counter[label][idx] = {key: val for key, val in count.items()}
 		return labels_counter
 
 	# create label:integer mapper
-	def __create_lookup_table(self):
-		lookup = {}
+	def __labels_mapper(self):
+		mapper = {}
 		for idx, column in enumerate(zip(*self.dataset)):
 
-			unique_values = list(set(column))
-			unique_values.sort()
-			lookup[idx] = {}
-			for i, val in enumerate(unique_values):
-				lookup[idx][val] = i if idx in self.attr_type_ids["categorical"] else val
+			unique = list(set(column))
+			unique.sort()
+			mapper[idx] = {}
+			for i, val in enumerate(unique):
+				mapper[idx][val] = i if idx in self.attr_type["categorical"] else val
 		
-		return lookup
+		return mapper
 
 	# convert categorical values to numbers
-	def __label_to_number(self):
-		dataset_size = len(self.dataset)
-		row_size = len(self.dataset[0])
-		for r in range(dataset_size):
-			for c in range(row_size):
-				self.dataset[r][c] = self.lookup[c][self.dataset[r][c]]
+	def __map_labels(self):
+		for row in range(len(self.dataset)):
+			for col in range(len(self.dataset[0])):
+				self.dataset[row][col] = self.mapper[col][self.dataset[row][col]]
 
 	# Split the dataset by class values, returns a dictionary
-	def __separate_by_class(self, pos=-1):
-		separated = dict()
+	def __filter_data_by_class(self):
+		filtered = {}
 		for i in range(len(self.dataset)):
-			vector = self.dataset[i]
-			class_value = vector[pos]
-			if (class_value not in separated):
-				separated[class_value] = list()
-			separated[class_value].append(vector)
-		return separated
+			row = self.dataset[i]
+			label = row[-1]
+			if label not in filtered:
+				filtered[label] = []
+			filtered[label].append(row)
+		return filtered
 
 	# Calculate the mean of a list of numbers
-	def __mean(self, numbers):
-		return sum(numbers)/float(len(numbers))
+	def __mean(self, num):
+		return sum(num) / len(num)
 
 	# Calculate the standard deviation of a list of numbers
-	def __stdev(self, numbers):
-		avg = self.__mean(numbers)
-		variance = sum([(x-avg)**2 for x in numbers]) / float(len(numbers) - 1)
+	def __stdev(self, num):
+		average = self.__mean(num)
+		variance = sum([(x-average)**2 for x in num]) / (len(num) - 1)
 		return sqrt(variance)
 
 	# Calculate the mean, stdev and count for each column in a dataset
-	def __summarize_dataset(self, rows):
+	def __process_dataset(self, rows):
 		summaries = [(self.__mean(column), self.__stdev(column), len(column)) for column in zip(*rows)]
-		del(summaries[-1])
-		return summaries
+		# remove the summary of the target attribute
+		return summaries[:-1]
 
 	# Split dataset by class then calculate statistics for each row
-	def __summarize_by_class(self, pos=-1):
-		separated = self.__separate_by_class(pos)
-		summaries = dict()
-		for class_value, rows in separated.items():
-			summaries[class_value] = self.__summarize_dataset(rows)
+	def __filter_processed_data_by_class(self):
+		filtered = self.__filter_data_by_class()
+		summaries = {}
+		for label, rows in filtered.items():
+			summaries[label] = self.__process_dataset(rows)
 		return summaries
 
 	# Calculate the Gaussian probability distribution function for x
-	def __calculate_probability(self, x, mean, stdev):
+	def __gaussian_density_func(self, x, mean, stdev):
 		exponent = exp(-((x-mean)**2 / (2 * stdev**2 )))
 		return (1 / (sqrt(2 * pi) * stdev)) * exponent
 
 	# Calculate the probabilities of predicting each class for a given row
 	def __calculate_class_probabilities(self, row):
-		total_rows = sum([self.model[label][0][2] for label in self.model])
-		probabilities = dict()
-		for class_value, class_summaries in self.model.items():
-			probabilities[class_value] = self.model[class_value][0][2]/float(total_rows)
-			for i in range(len(class_summaries)):
-				mean, stdev, size = class_summaries[i]
+		rows_num = sum([self.summaries[label][0][2] for label in self.summaries])
+		probabilities = {}
+		for label, label_summaries in self.summaries.items():
+			probabilities[label] = self.summaries[label][0][2] / rows_num
+			for i in range(len(label_summaries)):
+				mean, stdev, size = label_summaries[i]
 
-				if i in self.attr_type_ids["continuous"]:
-					probabilities[class_value] *= self.__calculate_probability(row[i], mean, stdev)
+				if i in self.attr_type["continuous"]:
+					probabilities[label] *= self.__gaussian_density_func(row[i], mean, stdev)
 				else: 
-					probabilities[class_value] *= self.target_labels_counter[class_value][i][row[i]] / size
+					probabilities[label] *= self.target_labels_counter[label][i][row[i]] / size
 
 		return probabilities
 
 	# Predict the class for a given row
 	def predict(self, row):
-		probabilities = self.__calculate_class_probabilities(row)
-		best_label, best_prob = None, -1
-		for class_value, probability in probabilities.items():
-			if best_label is None or probability > best_prob:
-				best_prob = probability
-				best_label = class_value
-		return best_label
+		prediction = None
+		positive, negative = self.get_labels_probabilities(row)
+		
+		if positive > negative:
+			prediction = "positive"
+		else:
+			prediction = "negative"
+
+		return prediction
 
 
 	def process_input(self, row):
-		for c in range(len(row)):
-			if c in self.attr_type_ids["continuous"]:
+		for col in range(len(row)):
+			if col not in self.attr_type["categorical"]:
 				continue
-			row[c] = self.lookup[c][row[c]]
+			row[col] = self.mapper[col][row[col]]
 
-	def get_labels_probabilities(self, row):
-		likelihood_positive = self.__calculate_class_probabilities(row)[1]
-		likelihood_negative = self.__calculate_class_probabilities(row)[0]
+	def get_prob(self, row):
+		prob_positive = self.__calculate_class_probabilities(row)[1]
+		prob_negative = self.__calculate_class_probabilities(row)[0]
 		
-		positive = likelihood_positive / (likelihood_negative + likelihood_positive)
-		negative = likelihood_negative / (likelihood_negative + likelihood_positive)
+		positive = prob_positive / (prob_negative + prob_positive)
+		negative = prob_negative / (prob_negative + prob_positive)
 
 		return positive, negative
 
 filename = os.path.join( os.path.dirname(__file__), "heart_disease_male.csv")
 data = load_csv(filename)
 
-bayes = NaiveBayes(dataset=data["dataset"],
-					attr_type_ids=data["attr_type_ids"])
+bayes = Bayes(dataset=data["dataset"],
+					attr_type=data["attr_type_ids"])
+
+# # define a new record
+# row = [43, "asympt", 140, "FALSE", "normal", 135, "yes", "positive"]
+# bayes.process_input(row)
+# # # predict the label
+# label = bayes.predict(row)
+# print(f"Data={row}, Predicted: {label}")
+# # # print probabilities for each class
+# positive, negative = bayes.get_labels_probabilities(row)
+# print(f"Negative: {negative}")
+# print(f"Positive: {positive} ")
 

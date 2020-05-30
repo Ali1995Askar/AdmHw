@@ -10,7 +10,7 @@ def id3Predict (pre_list):
 
 def BayesPredict (pre_list):   
         bayes.process_input(pre_list)
-        pos, nega = bayes.get_labels_probabilities(pre_list)
+        pos, nega = bayes.get_prob(pre_list)
         return pos , nega
 
 def home (request):
@@ -28,7 +28,7 @@ def home (request):
 
             pre_list = [Age , Chest_Pain_Type , Rest_Blood_Pressure , Blood_Sugar , Rest_Electro , Max_Heart_Rate , Exercice_Angina ]
             pos , neg = BayesPredict( [Age , Chest_Pain_Type , Rest_Blood_Pressure , Blood_Sugar , Rest_Electro , Max_Heart_Rate , Exercice_Angina ])
-            return render(request,'smartdoctor.html' , {'decision_tree':id3Predict(pre_list) , 'negative_bayes' :  neg   , 'positive_bayes' : pos })
+            return render(request,'smartdoctor.html' , {'decision_tree':id3Predict(pre_list) , 'negative_bayes' :  neg   , 'positive_bayes' : pos  , 'pos_perc' : pos*100 , 'neg_perc':neg*100})
 
         except:
             
